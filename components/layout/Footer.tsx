@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   FacebookIcon,
@@ -11,9 +10,18 @@ import {
   footerQuickLinks,
   footerShopLinks,
   socialLinks,
+  type SocialIcon,
 } from "@/lib/data/navigation";
 import { isExternalHref, WHATSAPP_URL } from "@/lib/data/contact";
 
+const socialIcons: Record<
+  SocialIcon,
+  (props: { className?: string }) => React.ReactNode
+> = {
+  facebook: (props) => <FacebookIcon {...props} />,
+  instagram: (props) => <InstagramIcon {...props} />,
+  tiktok: (props) => <TikTokIcon {...props} />,
+};
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-forest-dark text-white">
@@ -29,16 +37,6 @@ export function Footer() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-10 lg:pt-20 lg:pb-12">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-5">
-            {/* <Link href="/" className="inline-flex items-center">
-              <Image
-                src="/images/logo.png"
-                alt="Hunar Woods"
-                width={492}
-                height={199}å
-                className="h-9 w-auto object-contain brightness-0 invert"
-                unoptimized
-              />
-            </Link> */}
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
               Premium handmade solid wood furniture from Karachi. Crafting
               luxury that elevates your space and lasts for generations.
@@ -55,20 +53,21 @@ export function Footer() {
             </a>
 
             <div className="mt-7 flex gap-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-300 hover:border-gold/40 hover:bg-gold hover:text-forest-dark"
-                >
-                  {social.icon === "facebook" && <FacebookIcon className="w-4 h-4" />}
-                  {social.icon === "instagram" && <InstagramIcon className="w-4 h-4" />}
-                  {social.icon === "tiktok" && <TikTokIcon className="w-4 h-4" />}
-                </a>
-              ))}
+              {socialLinks.map((social) => {
+                const Icon = socialIcons[social.icon];
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-300 hover:border-gold/40 hover:bg-gold hover:text-forest-dark"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 

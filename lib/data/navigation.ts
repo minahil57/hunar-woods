@@ -29,6 +29,16 @@ export const footerQuickLinks: NavLink[] = [
   { label: "Terms & Conditions", href: "/terms" },
 ];
 
-export const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/hunarwoods?igsh=bjJ3a3U2azdzbHBn", icon: "instagram" as const },
+export type SocialIcon = "facebook" | "instagram" | "tiktok";
+
+export const socialLinks: {
+  label: string;
+  href: string;
+  icon: SocialIcon;
+}[] = [
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/hunarwoods?igsh=bjJ3a3U2azdzbHBn",
+    icon: "instagram",
+  },
 ];
