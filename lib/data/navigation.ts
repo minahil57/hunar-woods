@@ -11,14 +11,17 @@ export const mainNavLinks: NavLink[] = [
 
 export const footerCustomerLinks: NavLink[] = [
   { label: "Contact Us", href: WHATSAPP_URL },
-  { label: "FAQs", href: "/faq" },
-  { label: "Returns", href: "/returns" },
-  { label: "Shipping", href: "/shipping" },
+];
+
+export const footerShopLinks: NavLink[] = [
+  { label: "All Products", href: "/products" },
+  { label: "Deals", href: "/deals" },
+  { label: "Best Sellers", href: "/products?collection=best-sellers" },
+  { label: "New Arrivals", href: "/products?collection=new-arrivals" },
 ];
 
 export const footerAboutLinks: NavLink[] = [
   { label: "About Us", href: "/about" },
-  { label: "Blog", href: "/blog" },
 ];
 
 export const footerQuickLinks: NavLink[] = [
@@ -27,7 +30,5 @@ export const footerQuickLinks: NavLink[] = [
 ];
 
 export const socialLinks = [
-  { label: "Facebook", href: "https://facebook.com", icon: "facebook" as const },
-  { label: "Instagram", href: "https://instagram.com", icon: "instagram" as const },
-  { label: "TikTok", href: "https://tiktok.com", icon: "tiktok" as const },
+  { label: "Instagram", href: "https://www.instagram.com/hunarwoods?igsh=bjJ3a3U2azdzbHBn", icon: "instagram" as const },
 ];

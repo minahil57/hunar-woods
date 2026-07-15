@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   FacebookIcon,
@@ -8,27 +9,52 @@ import {
   footerAboutLinks,
   footerCustomerLinks,
   footerQuickLinks,
+  footerShopLinks,
   socialLinks,
 } from "@/lib/data/navigation";
-import { isExternalHref } from "@/lib/data/contact";
+import { isExternalHref, WHATSAPP_URL } from "@/lib/data/contact";
 
 export function Footer() {
   return (
-    <footer className="bg-section-dark text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-          <div>
-            <Link
-              href="/"
-              className="font-serif text-2xl font-semibold tracking-wide"
-            >
-              Hunar Woods
-            </Link>
-            <p className="mt-4 text-sm text-white/70 leading-relaxed max-w-xs">
+    <footer className="relative overflow-hidden bg-forest-dark text-white">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        aria-hidden
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 12% 20%, rgba(196,165,116,0.18), transparent 40%), radial-gradient(circle at 88% 80%, rgba(255,255,255,0.06), transparent 35%)",
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-10 lg:pt-20 lg:pb-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-5">
+            {/* <Link href="/" className="inline-flex items-center">
+              <Image
+                src="/images/logo.png"
+                alt="Hunar Woods"
+                width={492}
+                height={199}å
+                className="h-9 w-auto object-contain brightness-0 invert"
+                unoptimized
+              />
+            </Link> */}
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
               Premium handmade solid wood furniture from Karachi. Crafting
               luxury that elevates your space and lasts for generations.
             </p>
-            <div className="flex gap-4 mt-6">
+
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-4 py-2 text-sm font-medium text-gold transition-colors hover:bg-gold hover:text-forest-dark"
+            >
+              Chat on WhatsApp
+              <span aria-hidden>→</span>
+            </a>
+
+            <div className="mt-7 flex gap-3">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
@@ -36,54 +62,51 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="p-2 rounded-full bg-white/10 hover:bg-gold hover:text-forest transition-colors"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition-all duration-300 hover:border-gold/40 hover:bg-gold hover:text-forest-dark"
                 >
-                  {social.icon === "facebook" && <FacebookIcon />}
-                  {social.icon === "instagram" && <InstagramIcon />}
-                  {social.icon === "tiktok" && <TikTokIcon />}
+                  {social.icon === "facebook" && <FacebookIcon className="w-4 h-4" />}
+                  {social.icon === "instagram" && <InstagramIcon className="w-4 h-4" />}
+                  {social.icon === "tiktok" && <TikTokIcon className="w-4 h-4" />}
                 </a>
               ))}
             </div>
           </div>
 
-          <FooterColumn title="Customer Service" links={footerCustomerLinks} />
-          <FooterColumn title="About" links={footerAboutLinks} />
-
-          <div>
-            <h3 className="font-serif text-lg font-semibold mb-4">
-              Subscribe
-            </h3>
-            <p className="text-sm text-white/70 mb-4">
-              Get updates on new arrivals, deals, and exclusive offers.
-            </p>
-            <form className="flex flex-col gap-2">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-gold"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2.5 rounded-lg bg-gold text-forest-dark text-sm font-semibold hover:bg-gold-light transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7 lg:gap-6">
+            <FooterColumn title="Shop" links={footerShopLinks} />
+            <FooterColumn title="Company" links={[...footerAboutLinks, ...footerCustomerLinks]} />
+            <div className="col-span-2 sm:col-span-1">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
+                Visit
+              </h3>
+              <div className="mt-4 space-y-3 text-sm leading-relaxed text-white/65">
+                <p>Karachi, Pakistan</p>
+                <p>Handmade solid wood furniture for modern homes</p>
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-white/85 transition-colors hover:text-gold"
+                >
+                  +92 316 1025858
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-white/10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/60">
-            &copy; {new Date().getFullYear()} Hunar Woods. All rights reserved.
+      <div className="relative border-t border-white/10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 sm:flex-row sm:px-6 lg:px-8">
+          <p className="text-xs text-white/45 sm:text-sm">
+            © {new Date().getFullYear()} Hunar Woods. All rights reserved.
           </p>
           <div className="flex gap-6">
             {footerQuickLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-white/60 hover:text-gold transition-colors"
+                className="text-xs text-white/45 transition-colors hover:text-gold sm:text-sm"
               >
                 {link.label}
               </Link>
@@ -104,23 +127,25 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="font-serif text-lg font-semibold mb-4">{title}</h3>
-      <ul className="space-y-2.5">
+      <h3 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gold">
+        {title}
+      </h3>
+      <ul className="mt-4 space-y-3">
         {links.map((link) => (
-          <li key={link.href}>
+          <li key={`${link.label}-${link.href}`}>
             {isExternalHref(link.href) ? (
               <a
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-white/70 hover:text-gold transition-colors"
+                className="text-sm text-white/65 transition-colors hover:text-white"
               >
                 {link.label}
               </a>
             ) : (
               <Link
                 href={link.href}
-                className="text-sm text-white/70 hover:text-gold transition-colors"
+                className="text-sm text-white/65 transition-colors hover:text-white"
               >
                 {link.label}
               </Link>

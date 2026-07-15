@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { ProductsToolbar } from "@/components/products/ProductsToolbar";
-import { getProducts } from "@/lib/products/queries";
 import { getRoomBySlug } from "@/lib/data/rooms";
 import type { ProductCollection, ProductSort } from "@/lib/products/types";
-import type { Category } from "@/lib/types";
+import type { Category, Product } from "@/lib/types";
 
 interface ProductsContentProps {
+  products: Product[];
   categorySlug?: string;
   roomSlug?: string;
   sort: ProductSort;
@@ -15,7 +15,8 @@ interface ProductsContentProps {
   categories: Category[];
 }
 
-export async function ProductsContent({
+export function ProductsContent({
+  products,
   categorySlug,
   roomSlug,
   sort,
@@ -23,13 +24,6 @@ export async function ProductsContent({
   searchQuery,
   categories,
 }: ProductsContentProps) {
-  const products = await getProducts({
-    categorySlug,
-    roomSlug,
-    sort,
-    collection,
-    search: searchQuery,
-  });
   const activeCategoryName = categories.find(
     (c) => c.slug === categorySlug
   )?.name;

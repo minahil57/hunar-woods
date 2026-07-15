@@ -119,7 +119,7 @@ export const valueProps: ValueProp[] = [
   {
     icon: "wood",
     title: "100% Solid Wood",
-    description: "No MDF or Plywood",
+    description: "Custom MDF and Plywood",
   },
   {
     icon: "handcrafted",

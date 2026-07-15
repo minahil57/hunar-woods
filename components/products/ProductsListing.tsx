@@ -1,10 +1,11 @@
-import { Suspense } from "react";
 import { ProductsAreaSkeleton } from "@/components/products/ProductsAreaSkeleton";
 import { ProductsContent } from "@/components/products/ProductsContent";
 import { ProductsHero } from "@/components/products/ProductsHero";
 import { ProductsSidebar } from "@/components/products/ProductsSidebar";
+import { getProducts } from "@/lib/products/queries";
 import type { ProductCollection, ProductSort } from "@/lib/products/types";
 import type { Category } from "@/lib/types";
+import { Suspense } from "react";
 
 interface ProductsListingProps {
   categories: Category[];
@@ -18,7 +19,7 @@ interface ProductsListingProps {
   breadcrumbs?: { label: string; href?: string }[];
 }
 
-export function ProductsListing({
+export async function ProductsListing({
   categories,
   activeCategory,
   activeSort,
@@ -32,6 +33,14 @@ export function ProductsListing({
     { label: "Products" },
   ],
 }: ProductsListingProps) {
+  const products = await getProducts({
+    categorySlug: activeCategory,
+    roomSlug: activeRoomSlug,
+    sort: activeSort,
+    collection: activeCollection,
+    search: searchQuery,
+  });
+
   const suspenseKey = `${activeCategory ?? "all"}-${activeRoomSlug ?? "all"}-${activeCollection}-${activeSort}-${searchQuery ?? ""}`;
 
   return (
@@ -40,6 +49,7 @@ export function ProductsListing({
         title={title}
         description={description}
         breadcrumbs={breadcrumbs}
+        productCount={products.length}
       />
 
       <section className="py-10 lg:py-14 bg-cream min-h-[60vh]">
@@ -56,12 +66,13 @@ export function ProductsListing({
 
             <Suspense key={suspenseKey} fallback={<ProductsAreaSkeleton />}>
               <ProductsContent
-                categorySlug={activeCategory}
+                products={products}
                 roomSlug={activeRoomSlug}
                 sort={activeSort}
                 collection={activeCollection}
                 searchQuery={searchQuery}
                 categories={categories}
+                categorySlug={activeCategory}
               />
             </Suspense>
           </div>

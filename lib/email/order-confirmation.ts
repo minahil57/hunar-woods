@@ -39,6 +39,18 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function getPublicSiteUrl(): string {
+  const configured = (process.env.ORDER_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "")
+    .trim()
+    .replace(/\/$/, "");
+
+  if (configured && !/localhost|127\.0\.0\.1/i.test(configured)) {
+    return configured;
+  }
+
+  return "https://hunarwoods.com";
+}
+
 function buildOrderConfirmationHtml(data: OrderEmailData): string {
   const orderDate = new Date().toLocaleDateString("en-PK", {
     weekday: "long",
@@ -51,14 +63,7 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
 
   const itemRows = data.items
     .map((item) => {
-      const imageCell = item.image
-        ? `<td style="width:72px;padding:16px 12px 16px 0;vertical-align:top;border-bottom:1px solid #e0dbd2;">
-            <img src="${escapeHtml(item.image)}" alt="" width="64" height="64" style="display:block;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #e0dbd2;" />
-          </td>`
-        : `<td style="width:72px;padding:16px 12px 16px 0;vertical-align:top;border-bottom:1px solid #e0dbd2;">
-            <div style="width:64px;height:64px;background:#f5f1e8;border-radius:8px;border:1px solid #e0dbd2;"></div>
-          </td>`;
-
+      // Product thumbnails in email often get blocked; keep text-first for deliverability
       const includedList =
         item.includedProducts && item.includedProducts.length > 0
           ? `<p style="margin:6px 0 0;font-size:12px;color:#6b6560;font-family:Arial,sans-serif;">Includes: ${escapeHtml(
@@ -73,7 +78,6 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
 
       return `
         <tr>
-          ${imageCell}
           <td style="padding:16px 0;border-bottom:1px solid #e0dbd2;vertical-align:top;">
             <p style="margin:0;font-size:15px;font-weight:600;color:#1e3a2f;font-family:Georgia,serif;">${escapeHtml(item.name)}</p>
             <p style="margin:6px 0 0;font-size:12px;color:#6b6560;font-family:Arial,sans-serif;">Quantity: ${item.quantity}</p>
@@ -95,7 +99,7 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
         </tr>`
       : "";
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://hunarwoods.com";
+  const siteUrl = getPublicSiteUrl();
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -125,7 +129,7 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
                 Hi <strong>${escapeHtml(data.customer.customerName)}</strong>,
               </p>
               <p style="margin:0 0 24px;font-size:14px;line-height:1.7;color:#6b6560;font-family:Arial,sans-serif;">
-                Great news — we've received your order and it's being processed. You'll find your order details below. Our team will contact you soon to confirm delivery.
+                We've received your order and it's being processed. Your order details are below. Our team will contact you soon to confirm delivery.
               </p>
 
               <!-- Order ID box -->
@@ -190,14 +194,14 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
                       ${escapeHtml(data.customer.customerName)}<br />
                       ${escapeHtml(data.customer.shippingAddress)}<br />
                       ${escapeHtml(data.customer.shippingCity)}, Pakistan<br />
-                      📞 ${escapeHtml(data.customer.customerPhone)}
+                      Phone: ${escapeHtml(data.customer.customerPhone)}
                     </p>
                   </td>
                   <td width="48%" valign="top" style="padding-left:12px;">
                     <p style="margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:#c4a574;font-family:Arial,sans-serif;">Payment</p>
                     <p style="margin:0;font-size:13px;line-height:1.7;color:#1a1a1a;font-family:Arial,sans-serif;">
                       ${PAYMENT_LABELS[data.customer.paymentMethod]}<br />
-                      ✉️ ${escapeHtml(data.customer.customerEmail)}
+                      Email: ${escapeHtml(data.customer.customerEmail)}
                     </p>
                   </td>
                 </tr>
@@ -224,10 +228,10 @@ function buildOrderConfirmationHtml(data: OrderEmailData): string {
             <td style="background:#2d3c2a;border-radius:0 0 16px 16px;padding:20px 32px;text-align:center;border:1px solid #2d3c2a;">
               <p style="margin:0 0 6px;font-size:12px;color:rgba(255,255,255,0.7);font-family:Arial,sans-serif;">
                 Questions? Reply to this email or contact
-                <a href="mailto:hello@hunarwoods.com" style="color:#c4a574;text-decoration:none;">hello@hunarwoods.com</a>
+                <a href="mailto:hunarwoods@gmail.com" style="color:#c4a574;text-decoration:none;">hunarwoods@gmail.com</a>
               </p>
               <p style="margin:0;font-size:11px;color:rgba(255,255,255,0.45);font-family:Arial,sans-serif;">
-                © ${new Date().getFullYear()} Hunar Woods · Premium Handmade Solid Wood Furniture
+                © ${new Date().getFullYear()} Hunar Woods. Premium handmade solid wood furniture.
               </p>
             </td>
           </tr>
@@ -275,6 +279,22 @@ function buildPlainText(data: OrderEmailData): string {
   ].join("\n");
 }
 
+function getAdminRecipients(customerEmail: string): string[] {
+  const recipients = new Set<string>();
+
+  for (const value of [
+    process.env.ORDER_STORE_EMAIL,
+    process.env.GMAIL_USER,
+  ]) {
+    const email = value?.trim().toLowerCase();
+    if (email && email.includes("@") && email !== customerEmail) {
+      recipients.add(email);
+    }
+  }
+
+  return [...recipients];
+}
+
 export async function sendOrderConfirmationEmail(
   data: OrderEmailData
 ): Promise<{ sent: boolean; error?: string }> {
@@ -291,9 +311,15 @@ export async function sendOrderConfirmationEmail(
   };
   const html = buildOrderConfirmationHtml(emailPayload);
   const text = buildPlainText(emailPayload);
-  const subject = `Your order ${data.orderNumber} is confirmed — Hunar Woods`;
+  const subject = `Order ${data.orderNumber} confirmed — Hunar Woods`;
+  const adminSubject = `New store order ${data.orderNumber} (${formatPrice(data.total)})`;
   const from = getFromAddress();
   const replyTo = process.env.GMAIL_USER ?? process.env.ORDER_REPLY_TO;
+  const adminEmails = getAdminRecipients(customerEmail);
+  const mailHeaders = {
+    "X-Entity-Ref-ID": data.orderId,
+    "X-Auto-Response-Suppress": "OOF, AutoReply",
+  };
 
   const gmail = createGmailTransporter();
   if (gmail) {
@@ -305,19 +331,24 @@ export async function sendOrderConfirmationEmail(
         subject,
         html,
         text,
+        headers: mailHeaders,
+        priority: "normal",
       });
 
       console.log("[email] Gmail confirmation sent to:", customerEmail);
 
-      const storeEmail = process.env.ORDER_STORE_EMAIL;
-      if (storeEmail && storeEmail !== customerEmail) {
+      for (const adminEmail of adminEmails) {
         await gmail.sendMail({
           from,
-          to: storeEmail,
-          subject: `[New Order] ${data.orderNumber} — ${formatPrice(data.total)}`,
+          to: adminEmail,
+          replyTo: customerEmail,
+          subject: adminSubject,
           html,
           text,
+          headers: mailHeaders,
+          priority: "normal",
         });
+        console.log("[email] Gmail admin copy sent to:", adminEmail);
       }
 
       return { sent: true };
@@ -354,6 +385,23 @@ export async function sendOrderConfirmationEmail(
     }
 
     console.log("[email] Resend confirmation sent to:", customerEmail);
+
+    for (const adminEmail of adminEmails) {
+      const { error: adminError } = await resend.emails.send({
+        from,
+        to: adminEmail,
+        subject: adminSubject,
+        html,
+        text,
+      });
+
+      if (adminError) {
+        console.error("[email] Resend admin copy failed:", adminError.message);
+      } else {
+        console.log("[email] Resend admin copy sent to:", adminEmail);
+      }
+    }
+
     return { sent: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown email error";

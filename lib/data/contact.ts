@@ -36,7 +36,7 @@ export function getProductWhatsAppUrl(product: Product): string {
   return getWhatsAppUrl(buildProductWhatsAppMessage(product));
 }
 
-export const WHATSAPP_PHONE = "923333653290";
+export const WHATSAPP_PHONE = "923161025858";
 
 export const WHATSAPP_DEFAULT_MESSAGE =
   "Hello! I'm interested in Hunar Woods furniture. I would like to know more.";

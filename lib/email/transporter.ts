@@ -1,10 +1,10 @@
 import nodemailer from "nodemailer";
 
 export function createGmailTransporter() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD;
+  const user = process.env.GMAIL_USER?.trim();
+  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
 
-  if (!user || !pass) {
+  if (!user || !pass || pass === "your-16-char-app-password") {
     return null;
   }
 
