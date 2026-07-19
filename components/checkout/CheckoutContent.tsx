@@ -24,18 +24,18 @@ const PAYMENT_OPTIONS: {
     description: "Pay when your order arrives at your doorstep",
     icon: "💵",
   },
-  {
-    value: "bank_transfer",
-    label: "Bank Transfer",
-    description: "Transfer details will be sent to your email",
-    icon: "🏦",
-  },
-  {
-    value: "card",
-    label: "Credit / Debit Card",
-    description: "We will contact you to complete payment",
-    icon: "💳",
-  },
+  // {
+  //   value: "bank_transfer",
+  //   label: "Bank Transfer",
+  //   description: "Transfer details will be sent to your email",
+  //   icon: "🏦",
+  // },
+  // {
+  //   value: "card",
+  //   label: "Credit / Debit Card",
+  //   description: "We will contact you to complete payment",
+  //   icon: "💳",
+  // },
 ];
 
 const CITIES = ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Other"];

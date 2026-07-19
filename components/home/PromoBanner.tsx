@@ -59,7 +59,7 @@ export function PromoBanner() {
               Free Delivery On Orders 50k+
             </h3>
             <p className="text-white/55 text-sm mt-3 leading-relaxed">
-              Karachi, Lahore &amp; Islamabad
+              Karachi
             </p>
           </div>
         </div>
